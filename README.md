@@ -18,7 +18,7 @@ Inspired by Home Assistant Tile card.
 ### HACS (Recommended)
 1. Open HACS in your Home Assistant instance.
 2. Click the 3 dots in the top right corner and select **Custom repositories**.
-3. Add your repository URL (`https://github.com/iljanev/ha-horizontal-gauge-card`).
+3. Add your repository URL (`https://github.com/YOUR_USERNAME/YOUR_REPO_NAME`).
 4. Select **Dashboard** as the category and click **Add**.
 5. Close the modal, search for "Horizontal Gauge Card", and click **Download**.
 6. Refresh your browser cache.
@@ -44,3 +44,11 @@ You can define segments directly via the visual editor under the "Segments" expa
 - value: 100
   color: var(--error-color)
   label: High
+```
+
+* **`value`**: The upper limit of the segment (the segment spans from the previous value up to this value).
+* **`color`**: The color of the segment (can be HEX like `#FF0000` or a CSS variable like `var(--error-color)`).
+* **`label`** *(Optional)*: The name of the segment to display if "Show Segment Labels" is enabled.
+
+## Usage
+Simply add a new card to your dashboard and select **Horizontal Gauge Card** from the visual picker. You can configure all colors, limits, fonts, and labels directly in the UI.
