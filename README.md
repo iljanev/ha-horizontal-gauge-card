@@ -50,5 +50,33 @@ You can define segments directly via the visual editor under the "Segments" expa
 * **`color`**: The color of the segment (can be HEX like `#FF0000` or a CSS variable like `var(--error-color)`).
 * **`label`** *(Optional)*: The name of the segment to display if "Show Segment Labels" is enabled.
 
+
+**Can be wrapped in config-template-card to allow for dynamic segments:**
+```yaml
+type: custom:config-template-card
+entities:
+  - sensor.electricity_price_with_tax_in_cents
+variables:
+  - states['input_number.price_cheap'].state
+  - states['input_number.price_normal'].state
+  - states['input_number.price_expensive'].state
+card:
+  type: custom:horizontal-gauge-card
+  entity: sensor.electricity_price_with_tax_in_cents
+  name: Electricity Price With Tax
+  min: -5
+  max: 60
+  segments:
+    - value: ${parseFloat(vars[0]) - 5}
+      color: "#07d"
+    - value: ${vars[1]}
+      color: "#0a0"
+    - value: ${vars[2]}
+      color: var(--warning-color)
+    - value: ${parseFloat(vars[2]) + 5}
+      color: var(--error-color)
+```
+
+
 ## Usage
 Simply add a new card to your dashboard and select **Horizontal Gauge Card** from the visual picker. You can configure all colors, limits, fonts, and labels directly in the UI.
