@@ -42,6 +42,7 @@ class HorizontalGaugeCard extends HTMLElement {
         needle_shadow: true,
         show_needle_label: false,
         decimals: 1,
+        segment_value_decimals: 0,
         unit: null,
         gauge_thickness: null,
         needle_label_position: 'above',
@@ -405,6 +406,7 @@ class HorizontalGaugeCard extends HTMLElement {
     let labelsBottomHTML = '';
 
     const showValues = this._config.show_value_labels;
+    const segmentValueDecimals = this._config.segment_value_decimals !== undefined ? this._config.segment_value_decimals : 0;
     const showNames = this._config.show_segment_labels;
 
     if (showValues || showNames) {
@@ -412,13 +414,13 @@ class HorizontalGaugeCard extends HTMLElement {
       let bottomContent = '';
 
       if (showValues) {
-        let valStr = `<span class="label-item label-value edge-min" style="left: 0%;">${min.toFixed(0)}</span>`;
+        let valStr = `<span class="label-item label-value edge-min" style="left: 0%;">${min.toFixed(segmentValueDecimals)}</span>`;
         segments.forEach((seg, idx) => {
           if (idx < segments.length - 1) {
-            valStr += `<span class="label-item label-value" style="left: ${this._valueToPercent(seg.to, min, max)}%;">${seg.to.toFixed(0)}</span>`;
+            valStr += `<span class="label-item label-value" style="left: ${this._valueToPercent(seg.to, min, max)}%;">${seg.to.toFixed(segmentValueDecimals)}</span>`;
           }
         });
-        valStr += `<span class="label-item label-value edge-max" style="left: 100%;">${max.toFixed(0)}</span>`;
+        valStr += `<span class="label-item label-value edge-max" style="left: 100%;">${max.toFixed(segmentValueDecimals)}</span>`;
 
         if (this._config.value_label_position === 'above') topContent += valStr;
         else bottomContent += valStr;
@@ -685,6 +687,7 @@ const SCHEMA = [
         schema: [
           { name: "show_segment_labels", selector: { boolean: {} } },
           { name: "show_value_labels", selector: { boolean: {} } },
+          { name: "segment_value_decimals", selector: { number: { mode: "box", min: 0, max: 5, step: 1 } } },
           { 
             name: "segment_label_position", 
             selector: { 
@@ -811,6 +814,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
       needle_label_position: "Needle Label Position",
       show_segment_labels: "Show Segment Labels (Names)",
       show_value_labels: "Show Value Labels (Numbers)",
+      segment_value_decimals: "Segment Value Decimals",
       segment_label_position: "Segment Name Position",
       value_label_position: "Value Number Position",
       segments: "Segments (YAML/JSON Array)",
