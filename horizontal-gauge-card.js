@@ -43,6 +43,7 @@ class HorizontalGaugeCard extends HTMLElement {
         show_needle_label: false,
         decimals: 1,
         segment_value_decimals: 0,
+        segment_trim_zeros: false,
         unit: null,
         gauge_thickness: null,
         needle_label_position: 'above',
@@ -122,6 +123,12 @@ class HorizontalGaugeCard extends HTMLElement {
     if (isNaN(value) || isNaN(min) || isNaN(max) || max === min) return 0;
     const v = Math.min(Math.max(value, min), max);
     return ((v - min) / (max - min)) * 100;
+  }
+
+  _formatValue(value, decimals, trimZeros) {
+    if (isNaN(value)) return '—';
+    const str = value.toFixed(decimals);
+    return trimZeros ? Number(str).toString() : str;
   }
 
   _parseThickness(t) {
@@ -414,13 +421,13 @@ class HorizontalGaugeCard extends HTMLElement {
       let bottomContent = '';
 
       if (showValues) {
-        let valStr = `<span class="label-item label-value edge-min" style="left: 0%;">${min.toFixed(segmentValueDecimals)}</span>`;
+        let valStr = `<span class="label-item label-value edge-min" style="left: 0%;">${this._formatValue(min, segmentValueDecimals, this._config.segment_trim_zeros)}</span>`;
         segments.forEach((seg, idx) => {
           if (idx < segments.length - 1) {
-            valStr += `<span class="label-item label-value" style="left: ${this._valueToPercent(seg.to, min, max)}%;">${seg.to.toFixed(segmentValueDecimals)}</span>`;
+            valStr += `<span class="label-item label-value" style="left: ${this._valueToPercent(seg.to, min, max)}%;">${this._formatValue(seg.to, segmentValueDecimals, this._config.segment_trim_zeros)}</span>`;
           }
         });
-        valStr += `<span class="label-item label-value edge-max" style="left: 100%;">${max.toFixed(segmentValueDecimals)}</span>`;
+        valStr += `<span class="label-item label-value edge-max" style="left: 100%;">${this._formatValue(max, segmentValueDecimals, this._config.segment_trim_zeros)}</span>`;
 
         if (this._config.value_label_position === 'above') topContent += valStr;
         else bottomContent += valStr;
@@ -552,7 +559,7 @@ class HorizontalGaugeCard extends HTMLElement {
       : (entity && entity.attributes.unit_of_measurement) || '';
 
     const decimals = typeof this._config.decimals === 'number' ? this._config.decimals : 1;
-    const valueText = !isNaN(value) ? value.toFixed(decimals) : '—';
+    const valueText = this._formatValue(value, decimals, false);
     const displayString = `${valueText} ${unit}`.trim(); // Trim in case unit is empty so we don't have trailing space
 
     if (this._elements.value) {
@@ -688,6 +695,7 @@ const SCHEMA = [
           { name: "show_segment_labels", selector: { boolean: {} } },
           { name: "show_value_labels", selector: { boolean: {} } },
           { name: "segment_value_decimals", selector: { number: { mode: "box", min: 0, max: 5, step: 1 } } },
+          { name: "segment_trim_zeros", selector: { boolean: {} } },
           { 
             name: "segment_label_position", 
             selector: { 
@@ -815,6 +823,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
       show_segment_labels: "Show Segment Labels (Names)",
       show_value_labels: "Show Value Labels (Numbers)",
       segment_value_decimals: "Segment Value Decimals",
+      segment_trim_zeros: "Trim Unnecessary Zeros (Segments)",
       segment_label_position: "Segment Name Position",
       value_label_position: "Value Number Position",
       segments: "Segments (YAML/JSON Array)",
