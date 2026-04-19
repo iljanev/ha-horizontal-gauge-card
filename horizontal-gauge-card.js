@@ -44,6 +44,7 @@ class HorizontalGaugeCard extends HTMLElement {
         decimals: 1,
         unit: null,
         gauge_thickness: null,
+        smooth_gradients: false,
         needle_label_position: 'above',
         segment_label_position: 'below',
         value_label_position: 'below',
@@ -442,10 +443,15 @@ class HorizontalGaugeCard extends HTMLElement {
     }
 
     const totalSpan = max - min || 1;
-    const segmentElements = segments.map((seg) => {
+    const segmentElements = segments.map((seg, idx) => {
       const span = seg.to - seg.from;
       const flexValue = span / totalSpan;
-      return `<div class="segment" style="flex: ${flexValue}; background: ${seg.color};"></div>`;
+      let background = seg.color;
+      if (this._config.smooth_gradients && idx < segments.length - 1) {
+        const nextColor = segments[idx + 1].color;
+        background = `linear-gradient(90deg, ${seg.color} 0%, ${nextColor} 100%)`;
+      }
+      return `<div class="segment" style="flex: ${flexValue}; background: ${background};"></div>`;
     }).join('');
 
     const gaugeAndNeedleHTML = `
@@ -640,7 +646,8 @@ const SCHEMA = [
           { name: "name_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
           { name: "value_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
           { name: "label_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
-          { name: "gauge_thickness", selector: { number: { mode: "box", min: 2, max: 40, step: 1 } } }
+          { name: "gauge_thickness", selector: { number: { mode: "box", min: 2, max: 40, step: 1 } } },
+          { name: "smooth_gradients", selector: { boolean: {} } }
         ]
       }
     ]
@@ -803,6 +810,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
       value_font_size: "Value Font Size (px)",
       label_font_size: "Label Font Size (px)",
       gauge_thickness: "Gauge Bar Height (px)",
+      smooth_gradients: "Smooth Gradients",
       needle: "Show Needle",
       needle_width: "Needle Width (px)",
       needle_color: "Needle Color (HEX or Var)",
