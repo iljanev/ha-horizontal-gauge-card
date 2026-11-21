@@ -231,6 +231,12 @@ class HorizontalGaugeCard extends HTMLElement {
     // Enforce 2 rows max (56px or 120px)
     const minHeight = this._display_rows === 1 ? '56px' : '120px';
 
+    const hasAction = [
+      this._config.tap_action,
+      this._config.hold_action,
+      this._config.double_tap_action,
+    ].some(action => action && action.action && action.action !== 'none');
+
     const cardStyle = `
       :host {
         display: block;
@@ -248,15 +254,13 @@ class HorizontalGaugeCard extends HTMLElement {
         box-shadow: var(--ha-card-box-shadow, none);
         border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
         transition: background-color 0.3s ease-out;
-        cursor: pointer;
+        cursor: ${hasAction ? 'pointer' : 'default'};
         height: 100%;
         min-height: ${minHeight};
       }
-      ha-card:hover {
-        background-color: var(--ha-card-hover-background, rgba(var(--rgb-primary-text-color), 0.04));
-      }
-      ha-card:focus {
-        background-color: var(--ha-card-hover-background, rgba(var(--rgb-primary-text-color), 0.08));
+      ha-card[role="button"]:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
       }
       .card-content {
         display: flex;
@@ -496,7 +500,7 @@ class HorizontalGaugeCard extends HTMLElement {
 
     const content = `
       <style>${cardStyle}</style>
-      <ha-card id="card" role="button" tabindex="0">
+      <ha-card id="card"${hasAction ? ' role="button" tabindex="0"' : ''}>
         <div class="card-content">
           ${iconTemplate}
           <div class="main">
@@ -520,7 +524,7 @@ class HorizontalGaugeCard extends HTMLElement {
     this._elements.unavailable = this.shadowRoot.getElementById('unavailable-text');
     this._elements.card = this.shadowRoot.getElementById('card');
 
-    if (this._elements.card) {
+    if (this._elements.card && hasAction) {
       this._elements.card.addEventListener('click', this._handleAction);
 
       let holdTimer;
