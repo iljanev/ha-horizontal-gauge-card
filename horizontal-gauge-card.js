@@ -15,6 +15,9 @@ class HorizontalGaugeCard extends HTMLElement {
       needle: null,
       needleValue: null,
       stateIcon: null,
+      icon: null,
+      relativeTime: null,
+      lastUpdatedSuffix: null,
       unavailable: null,
       card: null
     };
@@ -33,6 +36,7 @@ class HorizontalGaugeCard extends HTMLElement {
         max: 100,
         show_icon: true,
         icon_color_from_segment: false,
+        show_last_updated: false,
         show_name: true,
         show_value: true,
         show_segment_labels: false,
@@ -143,66 +147,6 @@ class HorizontalGaugeCard extends HTMLElement {
     return null;
   }
 
-  _getSegmentForValue(value) {
-    const segmentsCfg = this._config.segments || [];
-
-    if (!segmentsCfg.length) {
-      return null;
-    }
-
-    const numericValue = this._valueToNumber(value);
-
-    if (isNaN(numericValue)) {
-      return null;
-    }
-
-    const min = this._valueToNumber(this._config.min);
-    let currentFrom = min;
-
-    for (let i = 0; i < segmentsCfg.length; i++) {
-      const segment = segmentsCfg[i];
-      const segmentEnd = this._valueToNumber(segment.value);
-
-      if (!isNaN(segmentEnd) && numericValue <= segmentEnd) {
-        return {
-          from: currentFrom,
-          to: segmentEnd,
-          color: segment.color || 'var(--primary-color)',
-          label: segment.label || '',
-        };
-      }
-
-      currentFrom = segmentEnd;
-    }
-
-    const lastSegment = segmentsCfg[segmentsCfg.length - 1];
-    const lastSegmentEnd = this._valueToNumber(lastSegment.value);
-
-    return {
-      from: isNaN(lastSegmentEnd) ? currentFrom : lastSegmentEnd,
-      to: this._cachedMax,
-      color: lastSegment.color || 'var(--primary-color)',
-      label: lastSegment.label || '',
-    };
-  }
-
-  _getIconColorForValue(value) {
-    if (!this._config.icon_color_from_segment) {
-      return '';
-    }
-
-    const segment = this._getSegmentForValue(value);
-    const segmentColor = segment ? segment.color : '';
-
-    // Gradient segment colors cannot be used directly as an icon color.
-    // Use the card's default icon color for those segments.
-    if (segmentColor && !segmentColor.includes('gradient(')) {
-      return segmentColor;
-    }
-
-    return '';
-  }
-
   _resolveSegmentsAndMax(min, configMax) {
     const segmentsCfg = this._config.segments || [];
 
@@ -271,6 +215,7 @@ class HorizontalGaugeCard extends HTMLElement {
 
     this._cachedMin = min;
     this._cachedMax = max;
+    this._cachedSegments = segments;
 
     const name = this._config.name || (entity && entity.attributes.friendly_name) || this._config.entity;
 
@@ -543,7 +488,7 @@ class HorizontalGaugeCard extends HTMLElement {
     if (showHeader) {
       headerHTML = `
         <div class="header">
-          ${this._config.show_name ? `<div class="name">${name}</div>` : ''}
+          ${this._config.show_name ? `<div class="name">${name}${this._config.show_last_updated ? '<span id="last-updated-suffix" hidden> - <ha-relative-time id="last-updated"></ha-relative-time></span>' : ''}</div>` : ''}
           ${this._config.show_value ? `<div class="value" id="value-text"></div>` : ''}
         </div>
       `;
@@ -570,6 +515,8 @@ class HorizontalGaugeCard extends HTMLElement {
     this._elements.needleValue = this.shadowRoot.getElementById('needle-value');
     this._elements.stateIcon = this.shadowRoot.getElementById('state-icon');
     this._elements.icon = this.shadowRoot.querySelector('.icon');
+    this._elements.relativeTime = this.shadowRoot.getElementById('last-updated');
+    this._elements.lastUpdatedSuffix = this.shadowRoot.getElementById('last-updated-suffix');
     this._elements.unavailable = this.shadowRoot.getElementById('unavailable-text');
     this._elements.card = this.shadowRoot.getElementById('card');
 
@@ -596,6 +543,34 @@ class HorizontalGaugeCard extends HTMLElement {
     this._rendered = true;
   }
 
+  _updateIconColor(value) {
+    const icon = this._elements.icon;
+    if (!icon) return;
+
+    let color = '';
+    if (this._config.icon_color_from_segment && Number.isFinite(value)) {
+      const segments = this._cachedSegments || [];
+      const segment = segments.find(segment => value <= segment.to) || segments[segments.length - 1];
+      // Use the segment's declared color, not the interpolated gradient color.
+      color = segment ? segment.color : '';
+    }
+
+    if (color) icon.style.color = color;
+    else icon.style.removeProperty('color');
+  }
+
+  _updateLastUpdated(entity) {
+    const relativeTime = this._elements.relativeTime;
+    const suffix = this._elements.lastUpdatedSuffix;
+    if (!relativeTime || !suffix) return;
+
+    const timestamp = entity && entity.last_updated;
+    const validTimestamp = Boolean(timestamp) && Number.isFinite(new Date(timestamp).getTime());
+    suffix.hidden = !validTimestamp;
+    relativeTime.hass = this._hass;
+    if (validTimestamp) relativeTime.datetime = timestamp;
+  }
+
   _updateState() {
     if (!this._rendered || !this._config || !this._hass) return;
 
@@ -607,15 +582,8 @@ class HorizontalGaugeCard extends HTMLElement {
       this._elements.stateIcon.hass = this._hass;
     }
 
-    if (this._elements.icon) {
-      const segmentIconColor = this._getIconColorForValue(entity ? entity.state : null);
-
-      if (segmentIconColor) {
-        this._elements.icon.style.color = segmentIconColor;
-      } else {
-        this._elements.icon.style.removeProperty('color');
-      }
-    }
+    this._updateLastUpdated(entity);
+    this._updateIconColor(unavailable ? NaN : this._valueToNumber(entity.state));
 
     if (unavailable) {
       if (this._elements.value) this._elements.value.style.display = 'none';
@@ -708,6 +676,7 @@ const SCHEMA = [
       { name: "show_name", selector: { boolean: {} } },
       { name: "show_icon", selector: { boolean: {} } },
       { name: "icon_color_from_segment", selector: { boolean: {} } },
+      { name: "show_last_updated", selector: { boolean: {} } },
       { name: "show_value", selector: { boolean: {} } },
       { name: "decimals", selector: { number: { mode: "box", min: 0, max: 5, step: 1 } } },
     ]
@@ -888,6 +857,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
       show_name: "Show Name",
       show_icon: "Show Icon",
       icon_color_from_segment: "Icon Color From Segment",
+      show_last_updated: "Show Entity Last Updated Time",
       show_value: "Show Value",
       decimals: "Decimals",
       unit: "Unit Override",
