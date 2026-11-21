@@ -280,8 +280,18 @@ class HorizontalGaugeCard extends HTMLElement {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background-color: var(--state-icon-active-color, rgba(68, 115, 158, 0.2));
-        flex-shrink: 0;
+        /* Normal theme surface, independent of the active segment background. */
+		background-color: var(
+		  --ha-card-background,
+		  var(--card-background-color, white)
+		);
+		
+		/* Preserve the existing translucent icon-circle tint. */
+		background-image: linear-gradient(
+		  var(--state-icon-active-color, rgba(68, 115, 158, 0.2)),
+		  var(--state-icon-active-color, rgba(68, 115, 158, 0.2))
+		);
+	    flex-shrink: 0;
       }
       .icon {
         color: var(--state-icon-color, var(--paper-item-icon-color, #44739e));
