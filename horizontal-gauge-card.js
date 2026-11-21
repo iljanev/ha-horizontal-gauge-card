@@ -418,31 +418,40 @@ class HorizontalGaugeCard extends HTMLElement {
         display: none;
       }
       .unavailable-badge {
-        display: none;
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background-color: var(--warning-color, #ff9800);
-        color: #fff;
-        pointer-events: none;
-      }
+		display: none;
+		position: absolute;
+		top: -2px;
+		right: -2px;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background-color: var(--warning-color, #ff9800);
+		color: #fff;
+		align-items: center;
+		justify-content: center;
+		line-height: 0;
+		pointer-events: none;
+	  }
       .unavailable-badge ha-icon {
-        --mdc-icon-size: 14px;
-        display: block;
-        width: 14px;
-        height: 14px;
-        margin: 2px;
-      }
+		--mdc-icon-size: 12px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 16px;
+		height: 16px;
+		margin: 0;
+		padding: 1px;
+		line-height: 0;
+	  }
       ha-card.is-unavailable .gauge-visuals {
         visibility: hidden;
       }
-      ha-card.is-unavailable .unavailable,
-      ha-card.is-unavailable .unavailable-badge {
-        display: block;
-      }
+      ha-card.is-unavailable .unavailable {
+      	display: block;
+	  }		
+	  ha-card.is-unavailable .unavailable-badge {
+		display: flex;
+	  }
       ha-card.is-unavailable .icon {
         color: var(--disabled-text-color, #9e9e9e);
         opacity: 0.6;
