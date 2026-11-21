@@ -80,3 +80,616 @@ card:
 
 ## Usage
 Simply add a new card to your dashboard and select **Horizontal Gauge Card** from the visual picker. You can configure all colors, limits, fonts, and labels directly in the UI.
+
+## Example cards used for the screenshot, replace code of a section
+```yaml
+type: grid
+cards:
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: false
+    show_name: true
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    grid_options:
+      columns: 6
+      rows: auto
+    icon_color_from_segment: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: false
+    show_name: true
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    name_font_size: 18
+    value_font_size: 18
+    grid_options:
+      columns: 6
+      rows: auto
+    smooth_gradients: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: false
+    show_name: true
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    grid_options:
+      columns: 3
+      rows: auto
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: false
+    show_name: true
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 0
+    needle_label_position: below
+    segment_label_position: below
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    name_font_size: 10
+    value_font_size: 12
+    label_font_size: 8
+    gauge_thickness: 10
+    grid_options:
+      columns: 3
+    smooth_gradients: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: false
+    show_name: true
+    show_value: false
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 0
+    needle_label_position: below
+    segment_label_position: below
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    name_font_size: 10
+    value_font_size: 12
+    label_font_size: 9
+    gauge_thickness: 10
+    grid_options:
+      columns: 3
+    unit: " "
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: false
+    show_value: false
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 0
+    needle_label_position: below
+    segment_label_position: below
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    name_font_size: 10
+    value_font_size: 12
+    label_font_size: 9
+    gauge_thickness: 10
+    grid_options:
+      columns: 3
+    unit: " "
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: true
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 25
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    icon_color_from_segment: true
+    show_last_updated: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 20
+    show_icon: true
+    show_name: false
+    show_value: true
+    label_font_size: 10px
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 10
+        color: var(--info-color)
+        label: Cold
+      - value: 25
+        color: var(--warning-color)
+        label: Warm
+      - value: 30
+        color: var(--error-color)
+        label: Hot
+    smooth_gradients: true
+    icon_color_from_segment: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: false
+    show_value: false
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    display_rows: 1
+    needle_label_position: above
+    segment_label_position: above
+    segments:
+      - value: 10
+        color: var(--info-color)
+        label: Cold
+      - value: 20
+        color: var(--warning-color)
+        label: Warm
+        back_color: '#222200'
+      - value: 30
+        color: var(--error-color)
+        label: Hot
+        back_color: '#440000'
+    value_label_position: above
+    icon_color_from_segment: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: false
+    show_value: false
+    show_segment_labels: true
+    show_value_labels: true
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    display_rows: 1
+    needle_label_position: above
+    segment_label_position: below
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+        back_color: '#444400'
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+        back_color: '#440000'
+    value_label_position: below
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: false
+    show_value: false
+    show_segment_labels: false
+    show_value_labels: true
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    display_rows: 1
+    needle_label_position: above
+    segment_label_position: below
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    smooth_gradients: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: false
+    show_value: false
+    show_segment_labels: false
+    show_value_labels: true
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: below
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    value_label_position: above
+    smooth_gradients: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: false
+    show_value: false
+    show_segment_labels: true
+    show_value_labels: true
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    display_rows: 1
+    needle_label_position: above
+    segment_label_position: below
+    segments:
+      - value: 20.05
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    value_label_position: below
+    smooth_gradients: false
+    segment_trim_zeros: true
+    segment_value_decimals: 0
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: true
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    name_font_size: 20
+    value_font_size: 20
+    icon_color_from_segment: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: true
+    show_value: true
+    show_segment_labels: true
+    show_value_labels: true
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    value_label_position: below
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: true
+    show_value: true
+    show_segment_labels: true
+    show_value_labels: true
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    display_rows: 1
+    needle_label_position: above
+    segment_label_position: below
+    segments:
+      - value: 20
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    value_label_position: below
+    smooth_gradients: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.vito_buffer_cylinder_temp
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: true
+    show_value: true
+    show_segment_labels: true
+    show_value_labels: true
+    needle: true
+    needle_width: 10
+    needle_color: '#00ff77'
+    needle_shadow: true
+    show_needle_label: true
+    decimals: 1
+    needle_label_position: below
+    segment_label_position: above
+    segments:
+      - value: 5
+        color: silver
+        label: Silver
+      - value: 15
+        color: gold
+        label: Gold
+      - value: 50
+        color: null
+        label: None
+      - value: 60
+        color: red
+        label: Red
+    value_label_position: below
+    name: Some Sensor
+    icon: mdi:abacus
+    name_font_size: 18
+    value_font_size: 24
+    label_font_size: 12
+    gauge_thickness: 26
+    unit: units
+    smooth_gradients: true
+    icon_color_from_segment: false
+    show_last_updated: true
+  - type: custom:horizontal-gauge-card
+    entity: sensor.water_target_temperature
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: true
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 25
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    icon_color_from_segment: true
+    show_last_updated: true
+  - type: custom:horizontal-gauge-card
+    entity: switch.carcharger
+    min: 0
+    max: 60
+    show_icon: true
+    show_name: false
+    show_value: true
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: true
+    segment_label_position: above
+    segments:
+      - value: 25
+        color: var(--info-color)
+        label: Cold
+      - value: 40
+        color: var(--warning-color)
+        label: Warm
+      - value: 60
+        color: var(--error-color)
+        label: Hot
+    icon_color_from_segment: true
+    show_last_updated: true
+column_span: 1
+
+```
