@@ -32,6 +32,7 @@ class HorizontalGaugeCard extends HTMLElement {
         min: 0,
         max: 100,
         show_icon: true,
+        icon_color_from_segment: false,
         show_name: true,
         show_value: true,
         show_segment_labels: false,
@@ -140,6 +141,66 @@ class HorizontalGaugeCard extends HTMLElement {
       if (m) return Number(m[1]);
     }
     return null;
+  }
+
+  _getSegmentForValue(value) {
+    const segmentsCfg = this._config.segments || [];
+
+    if (!segmentsCfg.length) {
+      return null;
+    }
+
+    const numericValue = this._valueToNumber(value);
+
+    if (isNaN(numericValue)) {
+      return null;
+    }
+
+    const min = this._valueToNumber(this._config.min);
+    let currentFrom = min;
+
+    for (let i = 0; i < segmentsCfg.length; i++) {
+      const segment = segmentsCfg[i];
+      const segmentEnd = this._valueToNumber(segment.value);
+
+      if (!isNaN(segmentEnd) && numericValue <= segmentEnd) {
+        return {
+          from: currentFrom,
+          to: segmentEnd,
+          color: segment.color || 'var(--primary-color)',
+          label: segment.label || '',
+        };
+      }
+
+      currentFrom = segmentEnd;
+    }
+
+    const lastSegment = segmentsCfg[segmentsCfg.length - 1];
+    const lastSegmentEnd = this._valueToNumber(lastSegment.value);
+
+    return {
+      from: isNaN(lastSegmentEnd) ? currentFrom : lastSegmentEnd,
+      to: this._cachedMax,
+      color: lastSegment.color || 'var(--primary-color)',
+      label: lastSegment.label || '',
+    };
+  }
+
+  _getIconColorForValue(value) {
+    if (!this._config.icon_color_from_segment) {
+      return '';
+    }
+
+    const segment = this._getSegmentForValue(value);
+    const segmentColor = segment ? segment.color : '';
+
+    // Gradient segment colors cannot be used directly as an icon color.
+    // Use the card's default icon color for those segments.
+    if (segmentColor && !segmentColor.includes('gradient(')) {
+      return segmentColor;
+    }
+
+    return '';
   }
 
   _resolveSegmentsAndMax(min, configMax) {
@@ -508,6 +569,7 @@ class HorizontalGaugeCard extends HTMLElement {
     this._elements.needle = this.shadowRoot.getElementById('needle');
     this._elements.needleValue = this.shadowRoot.getElementById('needle-value');
     this._elements.stateIcon = this.shadowRoot.getElementById('state-icon');
+    this._elements.icon = this.shadowRoot.querySelector('.icon');
     this._elements.unavailable = this.shadowRoot.getElementById('unavailable-text');
     this._elements.card = this.shadowRoot.getElementById('card');
 
@@ -543,6 +605,16 @@ class HorizontalGaugeCard extends HTMLElement {
     if (this._elements.stateIcon && entity) {
       this._elements.stateIcon.stateObj = entity;
       this._elements.stateIcon.hass = this._hass;
+    }
+
+    if (this._elements.icon) {
+      const segmentIconColor = this._getIconColorForValue(entity ? entity.state : null);
+
+      if (segmentIconColor) {
+        this._elements.icon.style.color = segmentIconColor;
+      } else {
+        this._elements.icon.style.removeProperty('color');
+      }
     }
 
     if (unavailable) {
@@ -635,6 +707,7 @@ const SCHEMA = [
     schema: [
       { name: "show_name", selector: { boolean: {} } },
       { name: "show_icon", selector: { boolean: {} } },
+      { name: "icon_color_from_segment", selector: { boolean: {} } },
       { name: "show_value", selector: { boolean: {} } },
       { name: "decimals", selector: { number: { mode: "box", min: 0, max: 5, step: 1 } } },
     ]
@@ -814,6 +887,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
       max: "Maximum Value",
       show_name: "Show Name",
       show_icon: "Show Icon",
+      icon_color_from_segment: "Icon Color From Segment",
       show_value: "Show Value",
       decimals: "Decimals",
       unit: "Unit Override",
