@@ -173,6 +173,7 @@ class HorizontalGaugeCard extends HTMLElement {
         from: currentFrom,
         to: endVal,
         color: seg.color || 'var(--primary-color)',
+        back_color: seg.back_color || '',
         label: seg.label || '',
       });
       currentFrom = endVal;
@@ -271,6 +272,7 @@ class HorizontalGaugeCard extends HTMLElement {
         padding: 0;
       }
       .icon-container {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -402,9 +404,51 @@ class HorizontalGaugeCard extends HTMLElement {
         transform: translateX(-100%);
       }
       .unavailable {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
         font-size: var(--ha-font-size-sm, 12px);
+        line-height: 1.2;
         color: var(--secondary-text-color);
-        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: none;
+      }
+      .unavailable-badge {
+        display: none;
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: var(--warning-color, #ff9800);
+        color: #fff;
+        pointer-events: none;
+      }
+      .unavailable-badge ha-icon {
+        --mdc-icon-size: 14px;
+        display: block;
+        width: 14px;
+        height: 14px;
+        margin: 2px;
+      }
+      ha-card.is-unavailable .gauge-visuals {
+        visibility: hidden;
+      }
+      ha-card.is-unavailable .unavailable,
+      ha-card.is-unavailable .unavailable-badge {
+        display: block;
+      }
+      ha-card.is-unavailable .icon {
+        color: var(--disabled-text-color, #9e9e9e);
+        opacity: 0.6;
+      }
+      ha-card.is-unavailable .value,
+      ha-card.is-unavailable .header.value-only {
         display: none;
       }
     `;
@@ -418,6 +462,10 @@ class HorizontalGaugeCard extends HTMLElement {
       } else {
         iconTemplate = `<div class="icon-container"><ha-state-icon class="icon" id="state-icon"></ha-state-icon></div>`;
       }
+    }
+
+    if (iconTemplate) {
+      iconTemplate = iconTemplate.replace('</div>', '<span class="unavailable-badge" aria-hidden="true"><ha-icon icon="mdi:help"></ha-icon></span></div>');
     }
 
     let labelsTopHTML = '';
@@ -485,13 +533,13 @@ class HorizontalGaugeCard extends HTMLElement {
       </div>
     `;
 
-    const mainContent = `<div class="gauge-wrapper">${labelsTopHTML}${gaugeAndNeedleHTML}${labelsBottomHTML}</div>`;
+    const mainContent = `<div class="gauge-wrapper"><div class="gauge-visuals">${labelsTopHTML}${gaugeAndNeedleHTML}${labelsBottomHTML}</div><div class="unavailable" id="unavailable-text" role="status"></div></div>`;
 
     const showHeader = this._config.show_name || this._config.show_value;
     let headerHTML = '';
     if (showHeader) {
       headerHTML = `
-        <div class="header">
+        <div class="header${this._config.show_name ? '' : ' value-only'}">
           ${this._config.show_name ? `<div class="name">${name}${this._config.show_last_updated ? '<span id="last-updated-suffix" hidden> - <ha-relative-time id="last-updated"></ha-relative-time></span>' : ''}</div>` : ''}
           ${this._config.show_value ? `<div class="value" id="value-text"></div>` : ''}
         </div>
@@ -506,7 +554,6 @@ class HorizontalGaugeCard extends HTMLElement {
           <div class="main">
             ${headerHTML}
             ${mainContent}
-            <div class="unavailable" id="unavailable-text">Unavailable</div>
           </div>
         </div>
       </ha-card>
@@ -547,14 +594,29 @@ class HorizontalGaugeCard extends HTMLElement {
     this._rendered = true;
   }
 
+  _getActiveSegment(value) {
+    if (!Number.isFinite(value)) return null;
+    const segments = this._cachedSegments || [];
+    return segments.find(segment => value <= segment.to) || segments[segments.length - 1] || null;
+  }
+
+  _updateBackgroundColor(value) {
+    const card = this._elements.card;
+    if (!card) return;
+    const segment = this._getActiveSegment(value);
+    const color = segment && segment.back_color;
+    // Clear the previous segment override, restoring the theme when absent.
+    card.style.removeProperty('background-color');
+    if (color) card.style.setProperty('background-color', color);
+  }
+
   _updateIconColor(value) {
     const icon = this._elements.icon;
     if (!icon) return;
 
     let color = '';
     if (this._config.icon_color_from_segment && Number.isFinite(value)) {
-      const segments = this._cachedSegments || [];
-      const segment = segments.find(segment => value <= segment.to) || segments[segments.length - 1];
+      const segment = this._getActiveSegment(value);
       // Use the segment's declared color, not the interpolated gradient color.
       color = segment ? segment.color : '';
     }
@@ -579,7 +641,12 @@ class HorizontalGaugeCard extends HTMLElement {
     if (!this._rendered || !this._config || !this._hass) return;
 
     const entity = this._getEntityState();
-    const unavailable = !entity || entity.state === 'unavailable' || entity.state === 'unknown';
+    const numericValue = entity ? this._valueToNumber(entity.state) : NaN;
+    const unavailable = !entity || entity.state === 'unavailable' ||
+      entity.state === 'unknown' || !Number.isFinite(numericValue);
+    if (this._elements.card) {
+      this._elements.card.classList.toggle('is-unavailable', unavailable);
+    }
 
     if (this._elements.stateIcon && entity) {
       this._elements.stateIcon.stateObj = entity;
@@ -587,18 +654,26 @@ class HorizontalGaugeCard extends HTMLElement {
     }
 
     this._updateLastUpdated(entity);
-    this._updateIconColor(unavailable ? NaN : this._valueToNumber(entity.state));
+    const segmentValue = unavailable ? NaN : this._valueToNumber(entity.state);
+    this._updateIconColor(segmentValue);
+    this._updateBackgroundColor(segmentValue);
 
     if (unavailable) {
       if (this._elements.value) this._elements.value.style.display = 'none';
       if (this._elements.needle) this._elements.needle.style.display = 'none';
       if (this._elements.needleValue) this._elements.needleValue.style.display = 'none';
-      if (this._elements.unavailable) this._elements.unavailable.style.display = 'block';
+      if (this._elements.unavailable) {
+        const state = !entity || entity.state === 'unavailable' ? 'unavailable' : 'unknown';
+        const fallback = state === 'unavailable' ? 'Unavailable' : 'Unknown';
+        const label = this._hass.localize && this._hass.localize(`state.default.${state}`);
+        this._elements.unavailable.textContent = label || fallback;
+        this._elements.unavailable.title = label || fallback;
+      }
       return;
     }
 
     if (this._elements.value) this._elements.value.style.display = 'block';
-    if (this._elements.unavailable) this._elements.unavailable.style.display = 'none';
+    if (this._elements.unavailable) this._elements.unavailable.textContent = '';
 
     const rawValue = this._valueToNumber(entity.state);
     const value = isNaN(rawValue) ? NaN : rawValue;
