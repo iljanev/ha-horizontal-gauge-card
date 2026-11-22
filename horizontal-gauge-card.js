@@ -1,6 +1,55 @@
 // horizontal-gauge-card.js
 // Home Assistant Custom Card - Horizontal Gauge with Needle
 
+// Effective defaults are shared, but are not automatically saved to YAML.
+function getHorizontalGaugeDefaults() {
+  return {
+  min: 0,
+  max: 100,
+  show_icon: true,
+  icon_color_from_segment: false,
+  icon_background_circle: true,
+  show_last_updated: false,
+  show_name: true,
+  show_value: true,
+  show_segment_labels: false,
+  show_value_labels: false,
+  needle: true,
+  needle_width: 2,
+  needle_color: '#ffffff',
+  needle_shadow: true,
+  show_needle_label: false,
+  decimals: 1,
+  segment_value_decimals: 0,
+  segment_trim_zeros: false,
+  unit: null,
+  gauge_thickness: null,
+  smooth_gradients: false,
+  gradient_blend: 50,
+  needle_label_position: 'above',
+  segment_label_position: 'below',
+  value_label_position: 'below',
+  name_font_size: null,
+  value_font_size: null,
+  label_font_size: null,
+  tap_action: { action: "more-info" },
+  hold_action: { action: "none" },
+  double_tap_action: { action: "none" }
+};
+}
+
+function resolveHorizontalGaugeConfig(config = {}) {
+  const supplied = Object.fromEntries(
+    Object.entries(config).filter(([, value]) => value !== undefined)
+  );
+  const resolved = { ...getHorizontalGaugeDefaults(), ...supplied };
+  // Preserve compatibility with configurations predating separate label positions.
+  if (config.segment_label_position && !config.value_label_position) {
+    resolved.value_label_position = config.segment_label_position;
+  }
+  return resolved;
+}
+
 class HorizontalGaugeCard extends HTMLElement {
   constructor() {
     super();
@@ -30,47 +79,7 @@ class HorizontalGaugeCard extends HTMLElement {
       throw new Error('Entity is required');
     }
 
-    this._config = Object.assign(
-      {
-        min: 0,
-        max: 100,
-        show_icon: true,
-        icon_color_from_segment: false,
-        icon_background_circle: true,
-        show_last_updated: false,
-        show_name: true,
-        show_value: true,
-        show_segment_labels: false,
-        show_value_labels: false,
-        needle: true,
-        needle_width: 2,
-        needle_color: '#ffffff',
-        needle_shadow: true,
-        show_needle_label: false,
-        decimals: 1,
-        segment_value_decimals: 0,
-        segment_trim_zeros: false,
-        unit: null,
-        gauge_thickness: null,
-        smooth_gradients: false,
-        gradient_blend: 50,
-        needle_label_position: 'above',
-        segment_label_position: 'below',
-        value_label_position: 'below',
-        name_font_size: null,
-        value_font_size: null,
-        label_font_size: null,
-        tap_action: { action: "more-info" },
-        hold_action: { action: "none" },
-        double_tap_action: { action: "none" }
-      },
-      config
-    );
-
-    // Provide a fallback if user had the old config
-    if (config.segment_label_position && !config.value_label_position) {
-        this._config.value_label_position = config.segment_label_position;
-    }
+    this._config = resolveHorizontalGaugeConfig(config);
 
     // Needle label does NOT push it to additional rows now.
     // We only check if segment labels or value labels are visible.
@@ -312,24 +321,20 @@ class HorizontalGaugeCard extends HTMLElement {
         height: 40px;
         border-radius: 50%;
         /* Normal theme surface, independent of the active segment background. */
-		background-color: var(
-		  --ha-card-background,
-		  var(--card-background-color, white)
-		);
+        background-color: var(
+          --ha-card-background,
+          var(--card-background-color, white)
+        );
 		
-		/* Preserve the existing translucent icon-circle tint. */
-		background-image: linear-gradient(
-		  var(--state-icon-active-color, rgba(68, 115, 158, 0.2)),
-		  var(--state-icon-active-color, rgba(68, 115, 158, 0.2))
-		);
-	    flex-shrink: 0;
+      background-image: linear-gradient(
+          var(--state-icon-active-color, rgba(68, 115, 158, 0.2)),
+          var(--state-icon-active-color, rgba(68, 115, 158, 0.2))
+        );
+	      flex-shrink: 0;
       }
       .icon-container-no-circle {
-		background-image: linear-gradient(
-		  var(--state-icon-active-color, rgba(68, 115, 158, 0)),
-		  var(--state-icon-active-color, rgba(68, 115, 158, 0))
-		);
-			margin-right: 8px;
+        background-image: none;
+			  margin-right: 8px;
       }
       .icon {
         color: var(--state-icon-color, var(--paper-item-icon-color, #44739e));
@@ -466,63 +471,67 @@ class HorizontalGaugeCard extends HTMLElement {
         display: none;
       }
       .unavailable-badge {
-		display: none;
-		position: absolute;
-		top: -2px;
-		right: -2px;
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background-color: var(--warning-color, #ff9800);
-		color: #fff;
-		align-items: center;
-		justify-content: center;
-		line-height: 0;
-		pointer-events: none;
-	  }
+        display: none;
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: var(--warning-color, #ff9800);
+        color: #fff;
+        align-items: center;
+        justify-content: center;
+        line-height: 0;
+        pointer-events: none;
+      }
       .unavailable-badge ha-icon {
-		--mdc-icon-size: 12px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 16px;
-		height: 16px;
-		margin: 0;
-		padding: 1px;
-		line-height: 0;
-	  }
+        --mdc-icon-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        padding: 1px;
+        line-height: 0;
+	    }
       ha-card.is-unavailable .gauge-visuals {
         visibility: hidden;
       }
       ha-card.is-unavailable .unavailable {
       	display: block;
-	  }		
-	  ha-card.is-unavailable .unavailable-badge {
-		display: flex;
-	  }
-      ha-card.is-unavailable .icon {
-        color: var(--disabled-text-color, #9e9e9e);
-        opacity: 0.6;
+	    }		
+      ha-card.is-unavailable .unavailable-badge {
+      display: flex;
       }
-      ha-card.is-unavailable .value,
-      ha-card.is-unavailable .header.value-only {
-        display: none;
-      }
-    `;
+        ha-card.is-unavailable .icon {
+          color: var(--disabled-text-color, #9e9e9e);
+          opacity: 0.6;
+        }
+        ha-card.is-unavailable .value,
+        ha-card.is-unavailable .header.value-only {
+          display: none;
+        }
+      `;
 
-    const icon = this._config.icon || (entity && entity.attributes && entity.attributes.icon);
+    const icon =
+      this._config.icon ||
+      (entity && entity.attributes && entity.attributes.icon);
+
     let iconTemplate = '';
 
     if (this._config.show_icon) {
-      if (icon) {
-		if (this._config.icon_background_circle) {
-	          iconTemplate = `<div class="icon-container"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
-		} else {
-	          iconTemplate = `<div class="icon-container icon-container-no-circle"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
-		}
-      } else {
-        iconTemplate = `<div class="icon-container"><ha-state-icon class="icon" id="state-icon"></ha-state-icon></div>`;
-      }
+      const containerClass = this._config.icon_background_circle
+        ? 'icon-container'
+        : 'icon-container icon-container-no-circle';
+
+      const iconElement = icon
+        ? `<ha-icon class="icon" icon="${icon}"></ha-icon>`
+        : '<ha-state-icon class="icon" id="state-icon"></ha-state-icon>';
+
+      iconTemplate =
+        `<div class="${containerClass}">${iconElement}</div>`;
     }
 
     if (iconTemplate) {
@@ -944,11 +953,12 @@ class HorizontalGaugeCardEditor extends HTMLElement {
 
   setConfig(config) {
     this._config = { ...config };
+    this._formData = resolveHorizontalGaugeConfig(this._config);
 
     if (!this._form) {
       this._renderForm();
     } else {
-      this._form.data = this._config;
+      this._form.data = this._formData;
     }
   }
 
@@ -963,8 +973,23 @@ class HorizontalGaugeCardEditor extends HTMLElement {
     if (!this._config || !this._hass) {
       return;
     }
-    const newConfig = ev.detail.value;
+    const values = ev.detail.value;
+    const previous = this._formData;
+    const newConfig = { ...this._config };
+    let changed = false;
 
+    // Save only fields changed by the user, not defaults supplied to ha-form.
+    for (const key of new Set([...Object.keys(previous), ...Object.keys(values)])) {
+      if (JSON.stringify(previous[key]) === JSON.stringify(values[key])) continue;
+      changed = true;
+      if (values[key] === undefined) delete newConfig[key];
+      else newConfig[key] = values[key];
+    }
+    if (!changed) return;
+
+    this._config = newConfig;
+    this._formData = resolveHorizontalGaugeConfig(newConfig);
+    this._form.data = this._formData;
     fireEvent(this, "config-changed", { config: newConfig });
   }
 
@@ -975,7 +1000,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
 
     this._form = document.createElement("ha-form");
     this._form.hass = this._hass;
-    this._form.data = this._config;
+    this._form.data = this._formData;
     this._form.schema = SCHEMA;
 
     this._form.computeLabel = this._computeLabel;
@@ -1053,13 +1078,11 @@ customElements.whenDefined('horizontal-gauge-card').then(() => {
 
     cardConstructor.getStubConfig = function() {
         return {
+            type: "custom:horizontal-gauge-card",
             entity: "",
             min: 0,
             max: 100,
             needle: true,
-            show_segment_labels: false,
-            segment_label_position: 'below',
-            value_label_position: 'above',
             segments: [
                 { value: 33, color: "var(--info-color)", label: "Low" },
                 { value: 66, color: "var(--warning-color)", label: "Med" },
