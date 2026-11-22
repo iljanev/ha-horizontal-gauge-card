@@ -36,6 +36,7 @@ class HorizontalGaugeCard extends HTMLElement {
         max: 100,
         show_icon: true,
         icon_color_from_segment: false,
+        icon_background_circle: true,
         show_last_updated: false,
         show_name: true,
         show_value: true,
@@ -323,6 +324,12 @@ class HorizontalGaugeCard extends HTMLElement {
 		);
 	    flex-shrink: 0;
       }
+      .icon-container-no-circle {
+	background-image: linear-gradient(
+	  var(--state-icon-active-color, rgba(68, 115, 158, 0)),
+	  var(--state-icon-active-color, rgba(68, 115, 158, 0))
+	);
+      }
       .icon {
         color: var(--state-icon-color, var(--paper-item-icon-color, #44739e));
       }
@@ -507,7 +514,11 @@ class HorizontalGaugeCard extends HTMLElement {
 
     if (this._config.show_icon) {
       if (icon) {
-        iconTemplate = `<div class="icon-container"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
+	if (this._config.icon_background_circle) {
+          iconTemplate = `<div class="icon-container"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
+	} else {
+          iconTemplate = `<div class="icon-container icon-container-no-circle"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
+	}
       } else {
         iconTemplate = `<div class="icon-container"><ha-state-icon class="icon" id="state-icon"></ha-state-icon></div>`;
       }
@@ -800,6 +811,7 @@ const SCHEMA = [
       { name: "show_name", selector: { boolean: {} } },
       { name: "show_icon", selector: { boolean: {} } },
       { name: "icon_color_from_segment", selector: { boolean: {} } },
+      { name: "icon_background_circle", selector: { boolean: {} } },
       { name: "show_last_updated", selector: { boolean: {} } },
       { name: "show_value", selector: { boolean: {} } },
       { name: "decimals", selector: { number: { mode: "box", min: 0, max: 5, step: 1 } } },
@@ -982,6 +994,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
       show_name: "Show Name",
       show_icon: "Show Icon",
       icon_color_from_segment: "Icon Color From Segment",
+      icon_background_circle: "Icon Background Circle",
       show_last_updated: "Show Entity Last Updated Time",
       show_value: "Show Value",
       decimals: "Decimals",
