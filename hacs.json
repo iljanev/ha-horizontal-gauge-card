@@ -1,6 +1,5 @@
 {
   "name": "Horizontal Gauge Card",
   "render_readme": true,
-  "filename": "horizontal-gauge-card.js",
-  "iot_class": "Local Push"
+  "filename": "horizontal-gauge-card.js"
 }
