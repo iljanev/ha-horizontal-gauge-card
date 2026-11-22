@@ -52,6 +52,7 @@ class HorizontalGaugeCard extends HTMLElement {
         unit: null,
         gauge_thickness: null,
         smooth_gradients: false,
+        gradient_blend: 50,
         needle_label_position: 'above',
         segment_label_position: 'below',
         value_label_position: 'below',
@@ -181,6 +182,35 @@ class HorizontalGaugeCard extends HTMLElement {
 
     const computedMax = segments[segments.length - 1].to;
     return { max: computedMax, segments };
+  }
+
+  _buildGaugeBackground(segments, min, max) {
+    if (!segments.length) return 'transparent';
+    if (segments.length === 1) return segments[0].color;
+
+    const configuredBlend = this._config.gradient_blend;
+    const parsedBlend = configuredBlend === null || configuredBlend === undefined
+      ? 50 : Number(configuredBlend);
+    const blend = Number.isFinite(parsedBlend)
+      ? Math.min(100, Math.max(0, parsedBlend)) / 100 : 0.5;
+    const stops = [`${segments[0].color} 0%`];
+
+    for (let i = 0; i < segments.length - 1; i++) {
+      const left = segments[i];
+      const right = segments[i + 1];
+      const boundary = this._valueToPercent(left.to, min, max);
+      const leftWidth = Math.max(0, left.to - left.from);
+      const rightWidth = Math.max(0, right.to - right.from);
+      // Symmetric zones cannot overlap, even with unequal segment widths.
+      const halfWidth = Math.min(leftWidth, rightWidth) * blend / 2;
+      const start = this._valueToPercent(left.to - halfWidth, min, max);
+      const end = this._valueToPercent(left.to + halfWidth, min, max);
+      stops.push(`${left.color} ${blend === 0 ? boundary : start}%`);
+      stops.push(`${right.color} ${blend === 0 ? boundary : end}%`);
+    }
+
+    stops.push(`${segments[segments.length - 1].color} 100%`);
+    return `linear-gradient(90deg, ${stops.join(', ')})`;
   }
 
   _handleAction(ev) {
@@ -529,16 +559,12 @@ class HorizontalGaugeCard extends HTMLElement {
     }
 
     const totalSpan = max - min || 1;
-    const segmentElements = segments.map((seg, idx) => {
-      const span = seg.to - seg.from;
-      const flexValue = span / totalSpan;
-      let background = seg.color;
-      if (this._config.smooth_gradients && idx < segments.length - 1) {
-        const nextColor = segments[idx + 1].color;
-        background = `linear-gradient(90deg, ${seg.color} 0%, ${nextColor} 100%)`;
-      }
-      return `<div class="segment" style="flex: ${flexValue}; background: ${background};"></div>`;
-    }).join('');
+    const segmentElements = this._config.smooth_gradients
+      ? `<div class="segment" style="flex: 1; background: ${this._buildGaugeBackground(segments, min, max)};"></div>`
+      : segments.map(seg => {
+          const flexValue = (seg.to - seg.from) / totalSpan;
+          return `<div class="segment" style="flex: ${flexValue}; background: ${seg.color};"></div>`;
+        }).join('');
 
     const gaugeAndNeedleHTML = `
       <div class="gauge-container">
@@ -796,7 +822,8 @@ const SCHEMA = [
           { name: "value_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
           { name: "label_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
           { name: "gauge_thickness", selector: { number: { mode: "box", min: 2, max: 40, step: 1 } } },
-          { name: "smooth_gradients", selector: { boolean: {} } }
+          { name: "smooth_gradients", selector: { boolean: {} } },
+          { name: "gradient_blend", selector: { number: { mode: "slider", min: 0, max: 100, step: 5 } } }
         ]
       }
     ]
@@ -964,6 +991,7 @@ class HorizontalGaugeCardEditor extends HTMLElement {
       label_font_size: "Label Font Size (px)",
       gauge_thickness: "Gauge Bar Height (px)",
       smooth_gradients: "Smooth Gradients",
+      gradient_blend: "Gradient Blend Width (%)",
       needle: "Show Needle",
       needle_width: "Needle Width (px)",
       needle_color: "Needle Color (HEX or Var)",
