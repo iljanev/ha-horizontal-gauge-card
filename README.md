@@ -14,11 +14,16 @@ Inspired by Home Assistant Tile card.
 - Extensive appearance overrides (font sizes, gauge thickness, custom units)
 
 ## Installation
+### Marketplace
+1. In your Home Assistant instance navigate to Settings -> Marketplace
+2. Search for Horizontal Gauge Card
+3. Click 'Install' button
+4. After installation reload your browser session (CTRL+SHIFT+R) or reload your HA companion app.
 
 ### HACS (Recommended)
 1. Open HACS in your Home Assistant instance.
 2. Click the 3 dots in the top right corner and select **Custom repositories**.
-3. Add your repository URL (`https://github.com/YOUR_USERNAME/YOUR_REPO_NAME`).
+3. Add your repository URL (`https://github.com/iljanev/ha-horizontal-gauge-card`).
 4. Select **Dashboard** as the category and click **Add**.
 5. Close the modal, search for "Horizontal Gauge Card", and click **Download**.
 6. Refresh your browser cache.
