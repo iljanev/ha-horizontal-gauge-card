@@ -821,9 +821,7 @@ const SCHEMA = [
           { name: "name_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
           { name: "value_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
           { name: "label_font_size", selector: { number: { mode: "box", min: 8, max: 40, step: 1 } } },
-          { name: "gauge_thickness", selector: { number: { mode: "box", min: 2, max: 40, step: 1 } } },
-          { name: "smooth_gradients", selector: { boolean: {} } },
-          { name: "gradient_blend", selector: { number: { mode: "slider", min: 0, max: 100, step: 5 } } }
+          { name: "gauge_thickness", selector: { number: { mode: "box", min: 2, max: 40, step: 1 } } }
         ]
       }
     ]
@@ -901,6 +899,8 @@ const SCHEMA = [
     name: "", 
     type: "expandable",
     schema: [
+      { name: "smooth_gradients", selector: { boolean: {} } },
+      { name: "gradient_blend", selector: { number: { mode: "slider", min: 0, max: 100, step: 5 } } },
       {
         name: "segments",
         selector: {
