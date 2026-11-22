@@ -3,7 +3,8 @@
 A highly customizable horizontal gauge card with a needle indicator for Home Assistant.
 Inspired by Home Assistant Tile card.
 
-![Horizontal Gauge Card Examples](image.png)
+![Horizontal Gauge Card Examples - Dark Theme](image.png)
+![Horizontal Gauge Card Examples — Light Theme](image_light.png)
 
 ## Features
 - With minimalistic settings occupies only 1 row 
