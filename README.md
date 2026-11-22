@@ -290,6 +290,8 @@ cards:
     grid_options:
       columns: 3
     unit: " "
+    smooth_gradients: false
+    gradient_blend: 75
   - type: custom:horizontal-gauge-card
     name: Outside Temperature
     min: -15
@@ -328,6 +330,7 @@ cards:
     gradient_blend: 100
     grid_options:
       columns: 6
+    icon_background_circle: false
   - type: custom:horizontal-gauge-card
     name: Outside Temperature
     min: -15
@@ -397,6 +400,7 @@ cards:
         label: Hot
     icon_color_from_segment: true
     show_last_updated: true
+    icon_background_circle: false
   - type: custom:horizontal-gauge-card
     entity: sensor.water_temperature
     min: 0
@@ -434,6 +438,7 @@ cards:
     min: 0
     max: 60
     show_icon: true
+    icon_background_circle: false
     show_name: false
     show_value: false
     show_segment_labels: false
@@ -454,11 +459,11 @@ cards:
       - value: 20
         color: var(--warning-color)
         label: Warm
-        back_color: '#222200'
+        back_color: '#ff04'
       - value: 30
         color: var(--error-color)
         label: Hot
-        back_color: '#440000'
+        back_color: '#f004'
     value_label_position: above
     icon_color_from_segment: true
   - type: custom:horizontal-gauge-card
@@ -486,12 +491,13 @@ cards:
       - value: 40
         color: var(--warning-color)
         label: Warm
-        back_color: '#443600'
+        back_color: '#ff04'
       - value: 60
         color: var(--error-color)
         label: Hot
-        back_color: '#440000'
+        back_color: '#f004'
     value_label_position: below
+    icon_background_circle: true
   - type: custom:horizontal-gauge-card
     entity: sensor.water_temperature
     min: 0
@@ -553,6 +559,7 @@ cards:
     value_label_position: above
     smooth_gradients: true
     gradient_blend: 10
+    icon_background_circle: false
   - type: custom:horizontal-gauge-card
     entity: sensor.water_temperature
     min: 0
@@ -776,5 +783,6 @@ cards:
         label: Hot
     icon_color_from_segment: true
     show_last_updated: true
+
 
 ```
