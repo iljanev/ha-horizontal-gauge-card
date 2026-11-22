@@ -285,6 +285,83 @@ cards:
       columns: 3
     unit: " "
   - type: custom:horizontal-gauge-card
+    name: Outside Temperature
+    min: -15
+    show_icon: true
+    show_name: true
+    show_value: true
+    label_font_size: 10px
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: above
+    segment_label_position: below
+    segments:
+      - value: 0
+        color: '#04a'
+        label: Freezing
+      - value: 15
+        color: var(--info-color)
+        label: Cold
+      - value: 30
+        color: var(--warning-color)
+        label: Warm
+      - value: 45
+        color: var(--error-color)
+        label: Hot
+    entity: sensor.vito_outdoor_temp
+    max: 45
+    smooth_gradients: true
+    icon_color_from_segment: true
+    gradient_blend: 100
+    grid_options:
+      columns: 6
+  - type: custom:horizontal-gauge-card
+    name: Outside Temperature
+    min: -15
+    show_icon: true
+    show_name: true
+    show_value: true
+    label_font_size: 10px
+    show_segment_labels: false
+    show_value_labels: false
+    needle: true
+    needle_width: 2
+    needle_color: '#ffffff'
+    needle_shadow: true
+    show_needle_label: false
+    decimals: 1
+    display_rows: 1
+    needle_label_position: above
+    segment_label_position: below
+    segments:
+      - value: 0
+        color: '#04a'
+        label: Freezing
+      - value: 15
+        color: var(--info-color)
+        label: Cold
+      - value: 30
+        color: var(--warning-color)
+        label: Warm
+      - value: 45
+        color: var(--error-color)
+        label: Hot
+    layout_options:
+      grid_columns: 2
+      grid_rows: 1
+    entity: sensor.vito_outdoor_temp
+    max: 45
+    smooth_gradients: true
+    icon_color_from_segment: true
+    gradient_blend: 20
+  - type: custom:horizontal-gauge-card
     entity: sensor.water_temperature
     min: 0
     max: 60
@@ -337,7 +414,7 @@ cards:
       - value: 10
         color: var(--info-color)
         label: Cold
-      - value: 25
+      - value: 20
         color: var(--warning-color)
         label: Warm
       - value: 30
@@ -345,6 +422,7 @@ cards:
         label: Hot
     smooth_gradients: true
     icon_color_from_segment: true
+    gradient_blend: 30
   - type: custom:horizontal-gauge-card
     entity: sensor.water_temperature
     min: 0
@@ -402,7 +480,7 @@ cards:
       - value: 40
         color: var(--warning-color)
         label: Warm
-        back_color: '#444400'
+        back_color: '#443600'
       - value: 60
         color: var(--error-color)
         label: Hot
@@ -437,6 +515,7 @@ cards:
         color: var(--error-color)
         label: Hot
     smooth_gradients: true
+    gradient_blend: 100
   - type: custom:horizontal-gauge-card
     entity: sensor.water_temperature
     min: 0
@@ -467,6 +546,7 @@ cards:
         label: Hot
     value_label_position: above
     smooth_gradients: true
+    gradient_blend: 10
   - type: custom:horizontal-gauge-card
     entity: sensor.water_temperature
     min: 0
@@ -661,7 +741,7 @@ cards:
     icon_color_from_segment: true
     show_last_updated: true
   - type: custom:horizontal-gauge-card
-    entity: switch.carcharger
+    entity: sensor.deleted_sensor
     min: 0
     max: 60
     show_icon: true
@@ -690,6 +770,5 @@ cards:
         label: Hot
     icon_color_from_segment: true
     show_last_updated: true
-column_span: 1
 
 ```
