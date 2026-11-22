@@ -325,10 +325,11 @@ class HorizontalGaugeCard extends HTMLElement {
 	    flex-shrink: 0;
       }
       .icon-container-no-circle {
-	background-image: linear-gradient(
-	  var(--state-icon-active-color, rgba(68, 115, 158, 0)),
-	  var(--state-icon-active-color, rgba(68, 115, 158, 0))
-	);
+		background-image: linear-gradient(
+		  var(--state-icon-active-color, rgba(68, 115, 158, 0)),
+		  var(--state-icon-active-color, rgba(68, 115, 158, 0))
+		);
+			margin-right: 8px;
       }
       .icon {
         color: var(--state-icon-color, var(--paper-item-icon-color, #44739e));
@@ -514,11 +515,11 @@ class HorizontalGaugeCard extends HTMLElement {
 
     if (this._config.show_icon) {
       if (icon) {
-	if (this._config.icon_background_circle) {
-          iconTemplate = `<div class="icon-container"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
-	} else {
-          iconTemplate = `<div class="icon-container icon-container-no-circle"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
-	}
+		if (this._config.icon_background_circle) {
+	          iconTemplate = `<div class="icon-container"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
+		} else {
+	          iconTemplate = `<div class="icon-container icon-container-no-circle"><ha-icon class="icon" icon="${icon}"></ha-icon></div>`;
+		}
       } else {
         iconTemplate = `<div class="icon-container"><ha-state-icon class="icon" id="state-icon"></ha-state-icon></div>`;
       }
